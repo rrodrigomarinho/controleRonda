@@ -19,7 +19,7 @@
 		<link>
 			<name>bin-debug</name>
 			<type>2</type>
-			<location>/home/pontta/controleRondaServidor/WebContent/controleRondaCliente-debug</location>
+			<location>/home/pontta/controleRonda/controleRondaServidor/WebContent/controleRondaCliente-debug</location>
 		</link>
 	</linkedResources>
 </projectDescription>

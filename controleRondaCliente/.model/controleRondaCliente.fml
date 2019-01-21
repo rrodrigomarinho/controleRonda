@@ -3,48 +3,6 @@
   <annotation name="ActionScriptGeneration">
     <item name="FullyQualifyReferences">true</item>
   </annotation>
-  <service name="SituacaoRegistroControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">situacaoRegistroControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="listar" return-type="SituacaoRegistro[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">SituacaoRegistro</item>
-      </annotation>
-    </function>
-  </service>
-  <entity name="SituacaoRegistro">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">SituacaoRegistro</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.SituacaoRegistro</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">SituacaoRegistroControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="descricaoSituacao" type="string"/>
-    <property name="observacaoSituacao" type="string"/>
-  </entity>
   <service name="ConfiguracaoControle">
     <annotation name="ActionScriptGeneration">
       <item name="ServiceType">RemoteObject</item>
@@ -54,7 +12,7 @@
     <annotation name="ServiceConfig">
       <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
       <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
       <item name="ABSOLUTE_ENDPOINT"></item>
     </annotation>
     <annotation name="ServiceTypeGroup">
@@ -66,596 +24,6 @@
       </annotation>
     </function>
   </service>
-  <service name="RondaPontoControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">rondaPontoControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">RondaPonto</item>
-      </annotation>
-      <parameter name="arg0" type="RondaPonto"/>
-    </function>
-    <function name="listar" return-type="RondaPonto[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">RondaPonto</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">RondaPonto</item>
-      </annotation>
-      <parameter name="arg0" type="RondaPonto"/>
-    </function>
-  </service>
-  <entity name="RondaPonto">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">RondaPonto</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.RondaPonto</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">RondaPontoControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="ponto" type="Ponto"/>
-    <property name="horaInicialPonto" type="string"/>
-    <property name="horaFinalPonto" type="string"/>
-    <property name="dataCadastro" type="date"/>
-    <property name="ronda" type="Ronda"/>
-  </entity>
-  <service name="RondaFuncionarioControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">rondaFuncionarioControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="listar" return-type="RondaFuncionario[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">RondaFuncionario</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">RondaFuncionario</item>
-      </annotation>
-      <parameter name="arg0" type="RondaFuncionario"/>
-    </function>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">RondaFuncionario</item>
-      </annotation>
-      <parameter name="arg0" type="RondaFuncionario"/>
-    </function>
-  </service>
-  <entity name="RondaFuncionario">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">RondaFuncionario</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.RondaFuncionario</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">RondaFuncionarioControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="funcionario" type="Funcionario"/>
-    <property name="dataFinalFuncionario" type="date"/>
-    <property name="dataInicialFuncionario" type="date"/>
-    <property name="dataCadastro" type="date"/>
-    <property name="ronda" type="Ronda"/>
-  </entity>
-  <service name="RegistroControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">registroControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="filtrar" return-type="opaque[]">
-      <annotation name="original signature">
-        <item name="inputParams">integer,integer,integer,integer,integer,date,date</item>
-        <item name="returnType">opaque</item>
-      </annotation>
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-      <parameter name="arg1" type="integer"/>
-      <parameter name="arg2" type="integer"/>
-      <parameter name="arg3" type="integer"/>
-      <parameter name="arg4" type="integer"/>
-      <parameter name="arg5" type="date"/>
-      <parameter name="arg6" type="date"/>
-    </function>
-    <function name="listar" return-type="opaque[]">
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-    </function>
-  </service>
-  <service name="ParametroSistemaControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">parametroSistemaControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="LINKED_FILE"></item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="listar" return-type="ParametroSistema[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">ParametroSistema</item>
-      </annotation>
-    </function>
-    <function name="alterar" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer,string,string</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-      <parameter name="arg1" type="string"/>
-      <parameter name="arg2" type="string"/>
-    </function>
-    <function name="pesquisar" return-type="ParametroSistema[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">string</item>
-        <item name="returnType">ParametroSistema</item>
-      </annotation>
-      <parameter name="arg0" type="string"/>
-    </function>
-    <function name="consultar" return-type="ParametroSistema">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">ParametroSistema</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-  </service>
-  <entity name="ParametroSistema">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">ParametroSistema</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.ParametroSistema</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">ParametroSistemaControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="valor" type="string"/>
-    <property name="nome" type="string"/>
-    <property name="descricao" type="string"/>
-  </entity>
-  <service name="FuncionarioControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">funcionarioControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="consultar" return-type="Funcionario">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">Funcionario</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Funcionario</item>
-      </annotation>
-      <parameter name="arg0" type="Funcionario"/>
-    </function>
-    <function name="listar" return-type="Funcionario[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">Funcionario</item>
-      </annotation>
-    </function>
-    <function name="alterar" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Funcionario</item>
-      </annotation>
-      <parameter name="arg0" type="Funcionario"/>
-    </function>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Funcionario</item>
-      </annotation>
-      <parameter name="arg0" type="Funcionario"/>
-    </function>
-    <function name="pesquisar" return-type="Funcionario[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">string</item>
-        <item name="returnType">Funcionario</item>
-      </annotation>
-      <parameter name="arg0" type="string"/>
-    </function>
-  </service>
-  <service name="CrachaControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">crachaControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="listar" return-type="Cracha[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">Cracha</item>
-      </annotation>
-    </function>
-    <function name="alterar" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Cracha</item>
-      </annotation>
-      <parameter name="arg0" type="Cracha"/>
-    </function>
-    <function name="consultarUltimoCracha" return-type="string">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">string</item>
-      </annotation>
-    </function>
-    <function name="pesquisar" return-type="Cracha[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">string</item>
-        <item name="returnType">Cracha</item>
-      </annotation>
-      <parameter name="arg0" type="string"/>
-    </function>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Cracha</item>
-      </annotation>
-      <parameter name="arg0" type="Cracha"/>
-    </function>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Cracha</item>
-      </annotation>
-      <parameter name="arg0" type="Cracha"/>
-    </function>
-    <function name="consultar" return-type="Cracha">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">Cracha</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-  </service>
-  <service name="RondaControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">rondaControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Ronda</item>
-      </annotation>
-      <parameter name="arg0" type="Ronda"/>
-    </function>
-    <function name="consultar" return-type="Ronda">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">Ronda</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-    <function name="listar" return-type="Ronda[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">Ronda</item>
-      </annotation>
-    </function>
-    <function name="alterar" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Ronda</item>
-      </annotation>
-      <parameter name="arg0" type="Ronda"/>
-    </function>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">Ronda</item>
-      </annotation>
-      <parameter name="arg0" type="Ronda"/>
-    </function>
-    <function name="pesquisar" return-type="Ronda[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">string</item>
-        <item name="returnType">Ronda</item>
-      </annotation>
-      <parameter name="arg0" type="string"/>
-    </function>
-  </service>
-  <entity name="Ronda">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">Ronda</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.Ronda</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">RondaFuncionarioControle,RondaControle,RondaPontoControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="nomeRonda" type="string"/>
-    <property name="dataCadastro" type="date"/>
-  </entity>
-  <service name="FuncionarioCrachaControle">
-    <annotation name="ActionScriptGeneration">
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services</item>
-      <item name="Destination">funcionarioCrachaControle</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
-      <item name="ABSOLUTE_ENDPOINT"></item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">BlazeDS</item>
-    </annotation>
-    <function name="excluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">FuncionarioCracha</item>
-      </annotation>
-      <parameter name="arg0" type="FuncionarioCracha"/>
-    </function>
-    <function name="incluir" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">FuncionarioCracha</item>
-      </annotation>
-      <parameter name="arg0" type="FuncionarioCracha"/>
-    </function>
-    <function name="listar" return-type="FuncionarioCracha[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParams">integer</item>
-        <item name="returnType">FuncionarioCracha</item>
-      </annotation>
-      <parameter name="arg0" type="integer"/>
-    </function>
-  </service>
-  <entity name="Cracha">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">Cracha</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.Cracha</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">FuncionarioCrachaControle,CrachaControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="numeroCracha" type="string"/>
-    <property name="dataCadastro" type="date"/>
-    <property name="situacaoCracha" type="string"/>
-  </entity>
-  <entity name="Funcionario">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">Funcionario</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.Funcionario</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">FuncionarioCrachaControle,RondaFuncionarioControle,FuncionarioControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="nomeFuncionario" type="string"/>
-    <property name="email" type="string"/>
-    <property name="telefone" type="string"/>
-    <property name="dataNascimento" type="date"/>
-    <property name="cpf" type="string"/>
-    <property name="dataCadastro" type="date"/>
-  </entity>
-  <entity name="FuncionarioCracha">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">FuncionarioCracha</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">br.com.controleronda.bean.FuncionarioCracha</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">FuncionarioCrachaControle</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="id" type="integer"/>
-    <property name="cracha" type="Cracha"/>
-    <property name="dataInicialCracha" type="date"/>
-    <property name="funcionario" type="Funcionario"/>
-    <property name="dataCadastro" type="date"/>
-    <property name="dataFinalCracha" type="date"/>
-  </entity>
   <service name="PontoControle">
     <annotation name="ActionScriptGeneration">
       <item name="ServiceType">RemoteObject</item>
@@ -665,7 +33,7 @@
     <annotation name="ServiceConfig">
       <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
       <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
       <item name="ABSOLUTE_ENDPOINT"></item>
     </annotation>
     <annotation name="ServiceTypeGroup">
@@ -735,6 +103,431 @@
       <parameter name="arg0" type="Ponto"/>
     </function>
   </service>
+  <service name="FuncionarioCrachaControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">funcionarioCrachaControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">FuncionarioCracha</item>
+      </annotation>
+      <parameter name="arg0" type="FuncionarioCracha"/>
+    </function>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">FuncionarioCracha</item>
+      </annotation>
+      <parameter name="arg0" type="FuncionarioCracha"/>
+    </function>
+    <function name="listar" return-type="FuncionarioCracha[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">FuncionarioCracha</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+  </service>
+  <entity name="FuncionarioCracha">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">FuncionarioCracha</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.FuncionarioCracha</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">FuncionarioCrachaControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="cracha" type="Cracha"/>
+    <property name="dataInicialCracha" type="date"/>
+    <property name="funcionario" type="Funcionario"/>
+    <property name="dataCadastro" type="date"/>
+    <property name="dataFinalCracha" type="date"/>
+  </entity>
+  <service name="RegistroControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">registroControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="filtrar" return-type="opaque[]">
+      <annotation name="original signature">
+        <item name="inputParams">integer,integer,integer,integer,integer,date,date</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+      <parameter name="arg1" type="integer"/>
+      <parameter name="arg2" type="integer"/>
+      <parameter name="arg3" type="integer"/>
+      <parameter name="arg4" type="integer"/>
+      <parameter name="arg5" type="date"/>
+      <parameter name="arg6" type="date"/>
+    </function>
+    <function name="listar" return-type="opaque[]">
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+    </function>
+  </service>
+  <service name="CrachaControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">crachaControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="listar" return-type="Cracha[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">Cracha</item>
+      </annotation>
+    </function>
+    <function name="alterar" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Cracha</item>
+      </annotation>
+      <parameter name="arg0" type="Cracha"/>
+    </function>
+    <function name="consultarUltimoCracha" return-type="string">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">string</item>
+      </annotation>
+    </function>
+    <function name="pesquisar" return-type="Cracha[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">string</item>
+        <item name="returnType">Cracha</item>
+      </annotation>
+      <parameter name="arg0" type="string"/>
+    </function>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Cracha</item>
+      </annotation>
+      <parameter name="arg0" type="Cracha"/>
+    </function>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Cracha</item>
+      </annotation>
+      <parameter name="arg0" type="Cracha"/>
+    </function>
+    <function name="consultar" return-type="Cracha">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">Cracha</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+  </service>
+  <entity name="Cracha">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Cracha</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.Cracha</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">FuncionarioCrachaControle,CrachaControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="numeroCracha" type="string"/>
+    <property name="dataCadastro" type="date"/>
+    <property name="situacaoCracha" type="string"/>
+  </entity>
+  <service name="RondaFuncionarioControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">rondaFuncionarioControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="listar" return-type="RondaFuncionario[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">RondaFuncionario</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">RondaFuncionario</item>
+      </annotation>
+      <parameter name="arg0" type="RondaFuncionario"/>
+    </function>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">RondaFuncionario</item>
+      </annotation>
+      <parameter name="arg0" type="RondaFuncionario"/>
+    </function>
+  </service>
+  <entity name="RondaFuncionario">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RondaFuncionario</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.RondaFuncionario</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">RondaFuncionarioControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="funcionario" type="Funcionario"/>
+    <property name="dataFinalFuncionario" type="date"/>
+    <property name="dataInicialFuncionario" type="date"/>
+    <property name="dataCadastro" type="date"/>
+    <property name="ronda" type="Ronda"/>
+  </entity>
+  <service name="RondaControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">rondaControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Ronda</item>
+      </annotation>
+      <parameter name="arg0" type="Ronda"/>
+    </function>
+    <function name="consultar" return-type="Ronda">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">Ronda</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+    <function name="listar" return-type="Ronda[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">Ronda</item>
+      </annotation>
+    </function>
+    <function name="alterar" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Ronda</item>
+      </annotation>
+      <parameter name="arg0" type="Ronda"/>
+    </function>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Ronda</item>
+      </annotation>
+      <parameter name="arg0" type="Ronda"/>
+    </function>
+    <function name="pesquisar" return-type="Ronda[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">string</item>
+        <item name="returnType">Ronda</item>
+      </annotation>
+      <parameter name="arg0" type="string"/>
+    </function>
+  </service>
+  <service name="SituacaoRegistroControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">situacaoRegistroControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="listar" return-type="SituacaoRegistro[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">SituacaoRegistro</item>
+      </annotation>
+    </function>
+  </service>
+  <entity name="SituacaoRegistro">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">SituacaoRegistro</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.SituacaoRegistro</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">SituacaoRegistroControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="descricaoSituacao" type="string"/>
+    <property name="observacaoSituacao" type="string"/>
+  </entity>
+  <service name="RondaPontoControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">rondaPontoControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">RondaPonto</item>
+      </annotation>
+      <parameter name="arg0" type="RondaPonto"/>
+    </function>
+    <function name="listar" return-type="RondaPonto[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">RondaPonto</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">RondaPonto</item>
+      </annotation>
+      <parameter name="arg0" type="RondaPonto"/>
+    </function>
+  </service>
   <entity name="Ponto">
     <annotation name="EntityProperties">
       <item name="EntityOriginalName">Ponto</item>
@@ -755,6 +548,120 @@
     <property name="dataCadastro" type="date"/>
     <property name="nomePonto" type="string"/>
   </entity>
+  <entity name="RondaPonto">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">RondaPonto</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.RondaPonto</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">RondaPontoControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="ponto" type="Ponto"/>
+    <property name="horaInicialPonto" type="string"/>
+    <property name="horaFinalPonto" type="string"/>
+    <property name="dataCadastro" type="date"/>
+    <property name="ronda" type="Ronda"/>
+  </entity>
+  <entity name="Ronda">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Ronda</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.Ronda</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">RondaFuncionarioControle,RondaControle,RondaPontoControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="nomeRonda" type="string"/>
+    <property name="dataCadastro" type="date"/>
+  </entity>
+  <service name="ParametroSistemaControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">parametroSistemaControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="LINKED_FILE"></item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="listar" return-type="ParametroSistema[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">ParametroSistema</item>
+      </annotation>
+    </function>
+    <function name="alterar" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer,string,string</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+      <parameter name="arg1" type="string"/>
+      <parameter name="arg2" type="string"/>
+    </function>
+    <function name="pesquisar" return-type="ParametroSistema[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">string</item>
+        <item name="returnType">ParametroSistema</item>
+      </annotation>
+      <parameter name="arg0" type="string"/>
+    </function>
+    <function name="consultar" return-type="ParametroSistema">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">ParametroSistema</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+  </service>
+  <entity name="ParametroSistema">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">ParametroSistema</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.ParametroSistema</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">ParametroSistemaControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="valor" type="string"/>
+    <property name="nome" type="string"/>
+    <property name="descricao" type="string"/>
+  </entity>
   <service name="UsuarioControle">
     <annotation name="ActionScriptGeneration">
       <item name="ServiceType">RemoteObject</item>
@@ -764,7 +671,7 @@
     <annotation name="ServiceConfig">
       <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
       <item name="contextRoot">/controleRondaServidor</item>
-      <item name="rootUrl">http://localhost:8080/controleRondaServidor/</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
       <item name="ABSOLUTE_ENDPOINT"></item>
     </annotation>
     <annotation name="ServiceTypeGroup">
@@ -853,6 +760,99 @@
     <property name="id" type="integer"/>
     <property name="conta" type="string"/>
     <property name="senha" type="string"/>
+    <property name="dataCadastro" type="date"/>
+  </entity>
+  <service name="FuncionarioControle">
+    <annotation name="ActionScriptGeneration">
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services</item>
+      <item name="Destination">funcionarioControle</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="contextRoot">/controleRondaServidor</item>
+      <item name="rootUrl">http://localhost:8080/controleRonda/controleRondaServidor/</item>
+      <item name="ABSOLUTE_ENDPOINT"></item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">BlazeDS</item>
+    </annotation>
+    <function name="consultar" return-type="Funcionario">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">Funcionario</item>
+      </annotation>
+      <parameter name="arg0" type="integer"/>
+    </function>
+    <function name="excluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Funcionario</item>
+      </annotation>
+      <parameter name="arg0" type="Funcionario"/>
+    </function>
+    <function name="listar" return-type="Funcionario[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">Funcionario</item>
+      </annotation>
+    </function>
+    <function name="alterar" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Funcionario</item>
+      </annotation>
+      <parameter name="arg0" type="Funcionario"/>
+    </function>
+    <function name="incluir" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">Funcionario</item>
+      </annotation>
+      <parameter name="arg0" type="Funcionario"/>
+    </function>
+    <function name="pesquisar" return-type="Funcionario[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">string</item>
+        <item name="returnType">Funcionario</item>
+      </annotation>
+      <parameter name="arg0" type="string"/>
+    </function>
+  </service>
+  <entity name="Funcionario">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">Funcionario</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">br.com.controleronda.bean.Funcionario</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">FuncionarioCrachaControle,RondaFuncionarioControle,FuncionarioControle</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="id" type="integer"/>
+    <property name="nomeFuncionario" type="string"/>
+    <property name="email" type="string"/>
+    <property name="telefone" type="string"/>
+    <property name="dataNascimento" type="date"/>
+    <property name="cpf" type="string"/>
     <property name="dataCadastro" type="date"/>
   </entity>
 </model>
