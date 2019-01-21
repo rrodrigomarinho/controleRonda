@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="1200" height="534"
+				creationComplete="listarFuncionario()"
+				title="Lista de Funcionários">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			
+			Alert.yesLabel = 'Sim';
+			Alert.noLabel = 'Não';
+			
+			import valueObjects.Funcionario;
+			
+			public static function abrir(pai:DisplayObject):listaDeFuncionarios {
+				var janela:listaDeFuncionarios = new listaDeFuncionarios();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function novoFuncionario():void {
+				var fr:cadastroDeFuncionarios = cadastroDeFuncionarios.abrir(this);
+				fr.addEventListener("adicionadoFuncionario", function(evt:Event):void {
+					listarFuncionario();
+				});
+			}
+			
+			private function editarFuncionario():void {
+				var fr:cadastroDeFuncionarios = cadastroDeFuncionarios.abrir(this);
+				fr.editarFuncionario(this, dataGridFuncionario.selectedItem.id);
+				fr.addEventListener("alteradoFuncionario", function(evt:Event):void {
+					listarFuncionario();
+				});
+			}
+			
+			private function excluirFuncionario():void {
+				Alert.show('Você deseja excluir o funcionário selecionado?', 'Alerta!', Alert.YES | Alert.NO, null,  function(evt:CloseEvent):void {
+					if (evt.detail == Alert.YES) {
+						var func:Funcionario = new Funcionario();
+						func.id = dataGridFuncionario.selectedItem.id;
+						funcionarioControle.excluir(func);
+						listarFuncionario();
+					}
+				}, null, Alert.YES);
+			}
+			
+			private function listarFuncionario(event:FlexEvent=null):void {
+				getFuncionario.token = funcionarioControle.listar();
+			}
+			
+			private function pesquisarFuncionario():void {
+				getFuncionario.token = funcionarioControle.pesquisar(txtPesquisar.text);
+			}
+			
+			private function imprimirLista():void {
+				navigateToURL(new URLRequest("relatorios/relatorio_funcionario.jsp"), "_blank");
+			}
+			
+			private function formatarData(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "DD/MM/YYYY";
+				return dataFormatada.format(item[column.dataField]);
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:CallResponder id="getFuncionario"/>
+		<services:FuncionarioControle id="funcionarioControle"
+									  endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									  showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="novo" label="Novo" click="novoFuncionario()" icon="@Embed('icones/novo.png')"/>
+		<mx:Button id="editar" label="Editar" click="editarFuncionario()" enabled="{dataGridFuncionario.selectedItem != null}" icon="@Embed('icones/editar.png')"/>
+		<mx:Button id="excluir" label="Excluir" click="excluirFuncionario()" enabled="{dataGridFuncionario.selectedItem != null}" icon="@Embed('icones/excluir.png')"/>
+		<mx:Button id="atualizar" label="Atualizar" click="listarFuncionario()" icon="@Embed('icones/atualizar.png')"/>
+		<mx:Button id="imprimir" label="Imprimir" click="imprimirLista()" icon="@Embed('icones/imprimir.png')"/>
+		<mx:Label id="pesquisar" text="Pesquisar"/>
+		<mx:TextInput id="txtPesquisar" width="100%" enter="pesquisarFuncionario()"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:DataGrid id="dataGridFuncionario" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="nomeFuncionario" headerText="Nome Completo"/>
+			<mx:DataGridColumn dataField="cpf" headerText="CPF"/>
+			<mx:DataGridColumn dataField="email" headerText="E-mail"/>
+			<mx:DataGridColumn dataField="dataNascimento" headerText="Data de Nascimento" labelFunction="formatarData"/>
+			<mx:DataGridColumn dataField="telefone" headerText="Telefone"/>
+			<mx:DataGridColumn dataField="dataCadastro" headerText="Data do Cadastro" labelFunction="formatarData"/>
+		</mx:columns>
+		<mx:AsyncListView list="{getFuncionario.lastResult}"/>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none" horizontalAlign="right">
+		<mx:Button id="fecharTela" label="Fechar" click="fechar()"/>
+	</mx:ApplicationControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="1018" height="534"
+				creationComplete="listarPontos()" 
+				title="Lista de Pontos">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			
+			Alert.yesLabel = 'Sim';
+			Alert.noLabel = 'Não';
+			
+			import valueObjects.Ponto;
+			
+			public static function abrir(pai:DisplayObject):listaDePontos {
+				var janela:listaDePontos = new listaDePontos();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function novoPonto():void {
+				var fr:cadastroDePontos = cadastroDePontos.abrir(this);
+				fr.addEventListener("adicionadoPonto", function(evt:Event):void {
+					listarPontos();
+				});
+			}
+			
+			private function editarPonto():void {
+				var fr:cadastroDePontos = cadastroDePontos.abrir(this);
+				fr.editarPonto(this, dataGridPonto.selectedItem.id);
+				fr.addEventListener("alteradoPonto", function(evt:Event):void {
+					listarPontos();
+				});
+			}
+			
+			private function excluirPonto():void {
+				Alert.show('Você deseja excluir o ponto selecionado?', 'Alerta!', Alert.YES | Alert.NO, null,  function(evt:CloseEvent):void {
+					if (evt.detail == Alert.YES) {
+						var pnt:Ponto = new Ponto();
+						pnt.id = dataGridPonto.selectedItem.id;
+						pontoControle.excluir(pnt);
+						listarPontos();
+					}
+				}, null, Alert.YES);
+			}
+			
+			public function listarPontos():void {
+				getPonto.token = pontoControle.listar();
+			}
+			
+			private function pesquisarPonto():void {
+				getPonto.token = pontoControle.pesquisar(txtPesquisar.text);
+			}
+			
+			private function imprimirLista():void {
+				navigateToURL(new URLRequest("relatorios/relatorio_ponto.jsp"), "_blank");
+			}
+			
+			private function formatarData(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "DD/MM/YYYY"; 
+				return dataFormatada.format(item[column.dataField]);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:CallResponder id="getPonto"/>
+		<services:PontoControle id="pontoControle"
+								endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								showBusyCursor="true"/>
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="novo" label="Novo" click="novoPonto()" icon="@Embed('icones/novo.png')"/>
+		<mx:Button id="editar" label="Editar" click="editarPonto()" enabled="{dataGridPonto.selectedItem != null}" icon="@Embed('icones/editar.png')"/>
+		<mx:Button id="excluir" label="Excluir" click="excluirPonto()" enabled="{dataGridPonto.selectedItem != null}" icon="@Embed('icones/excluir.png')"/>
+		<mx:Button id="atualizar" label="Atualizar" click="listarPontos()" icon="@Embed('icones/atualizar.png')"/>
+		<mx:Button id="imprimir" label="Imprimir" click="imprimirLista()" icon="@Embed('icones/imprimir.png')"/>
+		<mx:Label id="pesquisar" text="Pesquisar"/>
+		<mx:TextInput id="txtPesquisar" width="100%" enter="pesquisarPonto()"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:DataGrid id="dataGridPonto" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="nomePonto" headerText="Nome Ponto"/>
+			<mx:DataGridColumn dataField="ipPonto" headerText="IP Ponto"/>
+			<mx:DataGridColumn dataField="localPonto" headerText="Local Ponto"/>
+			<mx:DataGridColumn dataField="dataCadastro" headerText="Data do Cadastro" labelFunction="formatarData"/>
+		</mx:columns>
+		<mx:AsyncListView list="{getPonto.lastResult}"/>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none" horizontalAlign="right">
+		<mx:Button id="fecharTela" label="Fechar" click="fechar()"/>
+	</mx:ApplicationControlBar>
+	
+</mx:TitleWindow>

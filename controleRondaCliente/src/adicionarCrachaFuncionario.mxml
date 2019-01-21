@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="350" height="100%"
+				creationComplete="init(event)"
+				title="Adicionar Crachá" xmlns:services="services.*">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoCrachaFuncionario", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			
+			import valueObjects.Cracha;
+			import valueObjects.Funcionario;
+			import valueObjects.FuncionarioCracha;
+			
+			private var mensagem:String;
+			private var funcCrac:FuncionarioCracha = new FuncionarioCracha();
+			private var cra:Cracha = new Cracha();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject, fun_id:int):adicionarCrachaFuncionario {
+				var janela:adicionarCrachaFuncionario = new adicionarCrachaFuncionario();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				janela.funcCrac.funcionario = new Funcionario();
+				janela.funcCrac.funcionario.id = fun_id;
+				return janela;
+			}
+			
+			private function salvar(event:MouseEvent=null):void {
+				cmbCracha.errorString = "";
+				txtDataInicialCracha.errorString = "";
+				txtDataFinalCracha.errorString = "";
+				if (cmbCracha.selectedItem == "" || cmbCracha.selectedItem == null) {
+					cmbCracha.errorString = "Selecione um crachá";
+					return;
+				}
+				if (txtDataInicialCracha.text == "" || txtDataInicialCracha.text == null) {
+					txtDataInicialCracha.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtDataFinalCracha.text == "" || txtDataFinalCracha.text == null) {
+					txtDataFinalCracha.errorString = campoObrigatorio;
+					return;
+				}
+				cra.id = cmbCracha.selectedItem.id;
+				funcCrac.cracha = cra;
+				funcCrac.dataInicialCracha = txtDataInicialCracha.selectedDate;
+				funcCrac.dataFinalCracha = txtDataFinalCracha.selectedDate;
+				funcionarioCrachaControle.incluir(funcCrac);
+			}
+			
+			private function listarCracha():void {
+				getCracha.token = crachaControle.listar();
+			}
+			
+			private function carregarCracha(event:ResultEvent):void {
+				cmbCracha.dataProvider = event.result;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function init(event:FlexEvent):void {
+				listarCracha();
+			}
+			
+			protected function funcionarioCrachaControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function funcionarioCrachaControle_result(event:ResultEvent):void {
+				Alert.show("Crachá adicionado com sucesso!");	
+				dispatchEvent(new Event("adicionadoCrachaFuncionario"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getCracha" result="carregarCracha(event)"/>
+		<services:FuncionarioCrachaControle id="funcionarioCrachaControle"
+											endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+											fault="funcionarioCrachaControle_fault(event)"
+											result="funcionarioCrachaControle_result(event)"
+											showBusyCursor="true"/>
+		<services:CrachaControle id="crachaControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvar(event)"/>
+	</mx:ApplicationControlBar>
+	
+	
+	<mx:Form id="cadastroCrachas" width="100%" borderStyle="solid">
+		<mx:FormItem label="Crachá:" width="100%" required="true">
+			<mx:ComboBox id="cmbCracha" labelField="numeroCracha" width="100%" prompt="-- selecione um crachá --" />
+		</mx:FormItem>
+		<mx:FormItem label="Data Inicial:" width="100%" required="true">
+			<mx:DateField  id="txtDataInicialCracha" formatString="DD/MM/YYYY"
+						   yearNavigationEnabled="true"
+						   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+						   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']"/>
+		</mx:FormItem>
+		<mx:FormItem label="Data Final:" width="100%" required="true">
+			<mx:DateField  id="txtDataFinalCracha"
+						   formatString="DD/MM/YYYY"
+						   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+						   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+</mx:TitleWindow>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				width="1018" height="534" title="Lista de Parâmetros do Sistema" 
+				creationComplete="listarParametrosSistema()"
+				xmlns:services="services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			
+			public static function abrir(pai:DisplayObject):listaDeParametrosSistema {
+				var janela:listaDeParametrosSistema = new listaDeParametrosSistema();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function editarParametro():void {
+				var fr:cadastroDeParametrosSistema = cadastroDeParametrosSistema.abrir(this);
+				fr.editarParametrosSistema(this, dataGridParametroSistema.selectedItem.id);
+				fr.addEventListener("alteradoParametroSistema", function(evt:Event):void {
+					listarParametrosSistema();
+				});
+			}
+			
+			private function listarParametrosSistema():void {
+				getParametroSistema.token = parametroControleSistema.listar();
+			}
+			
+			private function pesquisarParametrosSistema():void {
+				getParametroSistema.token = parametroControleSistema.pesquisar(txtPesquisar.text);
+			}
+			
+			private function imprimirLista():void {
+				navigateToURL(new URLRequest("relatorios/relatorio_parametro.jsp"), "_blank");
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getParametroSistema"/>
+		<services:ParametroSistemaControle id="parametroControleSistema"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="editar" label="Editar" click="editarParametro()" enabled="{dataGridParametroSistema.selectedItem != null}" icon="@Embed('icones/editar.png')"/>
+		<mx:Button id="atualizar" label="Atualizar" click="listarParametrosSistema()"  icon="@Embed('icones/atualizar.png')"/>
+		<mx:Button id="imprimir" label="Imprimir" click="imprimirLista()" icon="@Embed('icones/imprimir.png')"/>
+		<mx:Label id="pesquisar" text="Pesquisar" />
+		<mx:TextInput id="txtPesquisar" width="100%" enter="pesquisarParametrosSistema()"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:DataGrid id="dataGridParametroSistema" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="descricao" headerText="Descrição"/>
+			<mx:DataGridColumn dataField="nome" headerText="Nome"/>
+			<mx:DataGridColumn dataField="valor" headerText="Valor"/>
+		</mx:columns>
+		<mx:AsyncListView list="{getParametroSistema.lastResult}"/>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none" horizontalAlign="right">
+		<mx:Button id="fecharTela" label="Fechar" click="fechar()"/>
+	</mx:ApplicationControlBar>
+</mx:TitleWindow>

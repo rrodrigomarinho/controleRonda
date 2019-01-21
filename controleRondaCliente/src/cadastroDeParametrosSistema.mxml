@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="800" height="100%"
+				title="Cadastro de Parâmetros do Sistema">
+	
+	<fx:Metadata>
+		[Event(name="alteradoParametroSistema", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.ParametroSistema;
+			
+			private var par_id:Object;
+			private var par:ParametroSistema = new ParametroSistema();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject):cadastroDeParametrosSistema {
+				var janela:cadastroDeParametrosSistema = new cadastroDeParametrosSistema();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function salvarParametroSistema(event:MouseEvent=null):void {
+				
+				txtValor.errorString = "";
+				
+				if (txtValor.text == "" || txtValor.text == null) {
+					txtValor.errorString = campoObrigatorio;
+					return;
+				}
+				
+				par.descricao = txtDescricao.text;
+				par.nome = txtNome.text;
+				par.valor = txtValor.text;
+				
+				updateParametroSistema.token = parametroSistemaControle.alterar(par.id, par.nome, par.valor);
+			}
+
+			public function editarParametrosSistema(pai:DisplayObject, id:Number):void {
+				getParametroSistema.token = parametroSistemaControle.consultar(id);
+				par_id = id;
+				PopUpManager.centerPopUp(this);
+			}	
+			
+			private function carregarParametroSistema(event:ResultEvent):void {
+				par = event.result as ParametroSistema;
+				txtDescricao.text = par.descricao;
+				txtNome.text = par.nome;
+				txtValor.text = par.valor;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function parametroControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function parametroSistemaAlterado(event:ResultEvent):void {
+				Alert.show("Parâmetro alterado com sucesso!");
+				dispatchEvent(new Event("alteradoParametroSistema"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getParametroSistema" result="carregarParametroSistema(event)"/>
+		<mx:CallResponder id="updateParametroSistema" result="parametroSistemaAlterado(event)" />
+		<services:ParametroSistemaControle id="parametroSistemaControle"
+									  endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									  fault="parametroControle_fault(event)"
+									  showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvarParametroSistema(event)" icon="@Embed('icones/salvar.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroParametroSistema" width="100%" borderStyle="solid">
+		<mx:FormItem required="false" label="Descrição:" width="100%" enabled="false">
+			<mx:TextInput id="txtDescricao" width="100%" maxChars="15"/>						
+		</mx:FormItem>
+		<mx:FormItem required="false" label="Nome:" width="100%" enabled="false">
+			<mx:TextInput id="txtNome" width="100%" maxChars="14"/>
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Valor:" width="100%">
+			<mx:TextInput id="txtValor" width="100%" maxChars="15"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

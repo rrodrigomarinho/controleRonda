@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="800" height="100%"
+				title="Cadastro de Crachás">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoCracha", type="flash.events.Event")]
+		[Event(name="alteradoCracha", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.Cracha;
+			private var cracha_id:Object;
+			private var crac:Cracha = new Cracha();
+			private var buscaLigada:Boolean = true;
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject):cadastroDeCrachas {
+				var janela:cadastroDeCrachas = new cadastroDeCrachas();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				janela.buscaLigada = true;
+				janela.getNumeroCracha.token = janela.crachaControle.consultarUltimoCracha();
+				return janela;
+			}
+			
+			private function salvarCracha(event:MouseEvent=null):void {
+				txtNumeroCracha.errorString = "";
+				if (txtNumeroCracha.text == "" || txtNumeroCracha.text == null) {
+					txtNumeroCracha.errorString = campoObrigatorio;
+					return;
+				}
+
+				crac.numeroCracha = txtNumeroCracha.text;
+				crac.situacaoCracha = cmbSituacao.text;
+				
+				if (cracha_id == null) {
+					insertCracha.token = crachaControle.incluir(crac);
+				} else {
+					updateCracha.token = crachaControle.alterar(crac);
+				}
+			}
+			
+			public function editarCracha(pai:DisplayObject, id:Number):void {
+				getCracha.token = crachaControle.consultar(id);
+				cracha_id = id;
+			}
+			
+			private function carregarCracha(event:ResultEvent):void {
+				crac = event.result as Cracha;
+				getNumeroCracha.token = crachaControle.consultarUltimoCracha();
+				cmbSituacao.selectedItem = crac.situacaoCracha;
+			}
+
+			protected function getCarregarNumeroCracha(event:ResultEvent):void {
+				if(buscaLigada == false) {
+					return;
+				}
+
+				txtNumeroCracha.text = event.result as String;
+				if ( txtNumeroCracha.text == "" ) {
+					setTimeout(function():void {
+						getNumeroCracha.token = crachaControle.consultarUltimoCracha();
+					}, 1000)
+				}
+			}
+			
+			private function fechar():void {
+				buscaLigada = false;
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function crachaControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function crachaAdicionado(event:ResultEvent):void {
+				Alert.show('Crachá cadastrado com sucesso!');
+				dispatchEvent(new Event("adicionadoCracha"));
+				fechar();
+			}
+			
+			protected function crachaAlterado(event:ResultEvent):void {
+				Alert.show('Crachá alterado com sucesso!');
+				dispatchEvent(new Event("alteradoCracha"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getNumeroCracha" result="getCarregarNumeroCracha(event)"/>
+		<mx:CallResponder id="getCracha" result="carregarCracha(event)"/>
+		<mx:CallResponder id="insertCracha" result="crachaAdicionado(event)" />
+		<mx:CallResponder id="updateCracha" result="crachaAlterado(event)" />
+		
+		<services:CrachaControle id="crachaControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="crachaControle_fault(event)"
+								 showBusyCursor="true" />
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvarCracha(event)" icon="@Embed('icones/salvar.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroCrachas" width="100%" borderStyle="solid">
+		<mx:FormItem required="true" label="Número Crachá:" width="100%" enabled="false">
+			<mx:TextInput id="txtNumeroCracha" width="100%" maxChars="200" />						
+		</mx:FormItem>
+		
+		<mx:FormItem label="Situação:" width="100%" required="true">
+			<mx:ComboBox id="cmbSituacao">
+				<fx:Array>
+					<fx:String>Desbloqueado</fx:String>
+					<fx:String>Bloqueado</fx:String>
+				</fx:Array>
+			</mx:ComboBox>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

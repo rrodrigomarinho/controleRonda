@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="100%" height="100%"
+				backgroundColor="#FFFFFF" xmlns:services="services.*" creationComplete="init(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			protected function init(event:FlexEvent):void {
+				txtUsuario.setFocus();
+			}
+
+			private function entrarMenu():void {
+				usuarioControle.autenticarUsuario(txtUsuario.text, txtSenha.text);
+			}
+			
+			protected function usuarioControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function usuarioControle_result(event:ResultEvent):void {
+				menuInicial.abrir(this);
+				configuracaoControle.carregarSistema();
+				txtUsuario.text = "";
+				txtSenha.text = "";
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:UsuarioControle id="usuarioControle"
+											endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+											fault="usuarioControle_fault(event)"
+											result="usuarioControle_result(event)"
+											showBusyCursor="true"/>
+		<services:ConfiguracaoControle id="configuracaoControle"
+									   endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									   showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:Label id="bemVindo" text="Seja bem vindo ao Controle de Rondas! Informe seu usuário e senha!" fontSize="15"/>
+	<mx:Form id="usuarioSenha" width="300" height="100%" fontSize="12">
+		<mx:FormItem label="Usuário" width="100%" required="true">
+			<mx:TextInput id="txtUsuario" width="100%" enter="txtSenha.setFocus()"/>
+		</mx:FormItem>
+		<mx:FormItem label="Senha" width="100%" required="true">
+			<mx:TextInput id="txtSenha" width="100%" maxChars="15" displayAsPassword="true" enter="entrarMenu()"/>
+		</mx:FormItem>
+		<mx:Spacer>
+		</mx:Spacer>
+		<mx:Button id="btnFechar" label="Entrar" width="100%" click="entrarMenu()"/>				
+	</mx:Form>
+</mx:Application>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="800" height="100%"
+				title="Cadastro de Usuário">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoUsuario", type="flash.events.Event")]
+		[Event(name="alteradoUsuario", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.Usuario;
+			
+			Alert.yesLabel = 'Sim';
+			Alert.noLabel = 'Não';
+			
+			private var usu_id:Object;
+			private var usu:Usuario = new Usuario();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject):cadastroDeUsuarios {
+				var janela:cadastroDeUsuarios = new cadastroDeUsuarios();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function salvarUsuario(event:MouseEvent=null):void {
+				
+				txtNome.errorString = "";
+				txtSenha.errorString = "";
+				txtSenhaConfirma.errorString = "";
+				
+				if (txtNome.text == "" || txtNome.text == null) {
+					txtNome.errorString = campoObrigatorio;
+					return;
+				}
+				
+				if (txtSenha.text == "" || txtSenha.text == null) {
+					txtSenha.errorString = campoObrigatorio;
+					return;
+				}
+				
+				usu.conta = txtNome.text;
+				usu.senha = txtSenha.text;
+				
+				if (txtSenhaConfirma.text != txtSenha.text) {
+					txtSenhaConfirma.errorString = "As senhas não coincidem!";
+				} else {
+					if (usu_id == null) {
+						insertUsuario.token = usuarioControle.incluir(usu);
+					} else {
+						updateUsuario.token = usuarioControle.alterar(usu);
+					}
+				}
+			}
+
+			public function editarUsuario(pai:DisplayObject, id:Number):void {
+				getUsuario.token = usuarioControle.consultar(id);
+				usu_id = id;
+				PopUpManager.centerPopUp(this);
+			}	
+			
+			private function carregarUsuario(event:ResultEvent):void {
+				usu = event.result as Usuario;
+				txtNome.text = usu.conta;
+				txtSenha.text = usu.senha;
+				txtSenhaConfirma.text = usu.senha;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function usuarioControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function usuarioAdicionado(event:ResultEvent):void {
+				Alert.show("Usuário adicionado com sucesso!");
+				dispatchEvent(new Event("adicionadoUsuario"));
+				fechar();
+			}
+			
+			protected function usuarioAlterado(event:ResultEvent):void {
+				Alert.show("Usuário alterado com sucesso!");
+				dispatchEvent(new Event("alteradoUsuario"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getUsuario" result="carregarUsuario(event)"/>
+		<mx:CallResponder id="insertUsuario" result="usuarioAdicionado(event)" />
+		<mx:CallResponder id="updateUsuario" result="usuarioAlterado(event)" />
+		<services:UsuarioControle id="usuarioControle"
+									  endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									  fault="usuarioControle_fault(event)"
+									  showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvarUsuario(event)" icon="@Embed('icones/salvar.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroUsuario" width="100%" borderStyle="solid">
+		<mx:FormItem required="true" label="Nome:" width="100%">
+			<mx:TextInput id="txtNome" width="100%" maxChars="14"/>
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Senha:" width="100%">
+			<mx:TextInput id="txtSenha" width="100%" maxChars="15" displayAsPassword="true"/>						
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Confirma senha:" width="100%">
+			<mx:TextInput id="txtSenhaConfirma" width="100%" maxChars="15" displayAsPassword="true" />
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="400" height="100%"
+				creationComplete="init(event)"
+				title="Adicionar Funcionário" xmlns:services="services.*">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoFuncionarioRonda", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			
+			import valueObjects.Funcionario;
+			import valueObjects.Ronda;
+			import valueObjects.RondaFuncionario;
+			
+			private var mensagem:String;
+			private var rondaFun:RondaFuncionario = new RondaFuncionario();
+			private var fun:Funcionario = new Funcionario();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject, ron_id:int):adicionarFuncionarioRonda {
+				var janela:adicionarFuncionarioRonda = new adicionarFuncionarioRonda();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				janela.rondaFun.ronda = new Ronda();
+				janela.rondaFun.ronda.id = ron_id;
+				return janela;
+			}
+			
+			private function salvar(event:MouseEvent=null):void {
+				cmbFuncionario.errorString = "";
+				txtDataInicialFuncionario.errorString = "";
+				txtDataFinalFuncionario.errorString = "";
+				if (cmbFuncionario.selectedItem == "" || cmbFuncionario.selectedItem == null) {
+					cmbFuncionario.errorString = "Selecione um funcionário";
+					return;
+				}
+				if (txtDataInicialFuncionario.text == "" || txtDataInicialFuncionario.text == null) {
+					txtDataInicialFuncionario.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtDataFinalFuncionario.text == "" || txtDataFinalFuncionario.text == null) {
+					txtDataFinalFuncionario.errorString = campoObrigatorio;
+					return;
+				}
+				fun.id = cmbFuncionario.selectedItem.id;
+				rondaFun.funcionario = fun;
+				rondaFun.dataInicialFuncionario = txtDataInicialFuncionario.selectedDate;
+				rondaFun.dataFinalFuncionario = txtDataFinalFuncionario.selectedDate;
+				rondaFuncionarioControle.incluir(rondaFun);
+			}
+			
+			private function listarFuncionario():void {
+				getFuncionario.token = funcionarioControle.listar();
+			}
+			
+			private function carregarFuncionario(event:ResultEvent):void {
+				cmbFuncionario.dataProvider = event.result;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function init(event:FlexEvent):void {
+				listarFuncionario();
+			}
+			
+			protected function rondaFuncionarioControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function rondaFuncionarioControle_result(event:ResultEvent):void {
+				Alert.show("Funcionário adicionado com sucesso!");	
+				dispatchEvent(new Event("adicionadoFuncionarioRonda"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getFuncionario" result="carregarFuncionario(event)"/>
+		<services:RondaFuncionarioControle id="rondaFuncionarioControle"
+											endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+											fault="rondaFuncionarioControle_fault(event)"
+											result="rondaFuncionarioControle_result(event)"
+											showBusyCursor="true"/>
+		<services:FuncionarioControle id="funcionarioControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvar(event)"/>
+	</mx:ApplicationControlBar>
+	
+	
+	<mx:Form id="cadastroFuncionario" width="100%" borderStyle="solid">
+		<mx:FormItem label="Funcionário:" width="100%" required="true">
+			<mx:ComboBox id="cmbFuncionario" labelField="nomeFuncionario" width="100%" prompt="-- selecione um funcionário --" />
+		</mx:FormItem>
+		<mx:FormItem label="Data Inicial:" width="100%" required="true">
+			<mx:DateField  id="txtDataInicialFuncionario" formatString="DD/MM/YYYY"
+						   yearNavigationEnabled="true"
+						   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+						   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']"/>
+		</mx:FormItem>
+		<mx:FormItem label="Data Final:" width="100%" required="true">
+			<mx:DateField  id="txtDataFinalFuncionario"
+						   formatString="DD/MM/YYYY"
+						   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+						   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+</mx:TitleWindow>

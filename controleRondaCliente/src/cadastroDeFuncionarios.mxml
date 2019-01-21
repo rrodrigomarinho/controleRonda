@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				xmlns:componentes="componentes.*"
+				width="800" height="100%"
+				title="Cadastro de Funcionário">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoFuncionario", type="flash.events.Event")]
+		[Event(name="alteradoFuncionario", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.Funcionario;
+			import valueObjects.FuncionarioCracha;
+			
+			Alert.yesLabel = 'Sim';
+			Alert.noLabel = 'Não';
+			
+			[Bindable]
+			private var fun_id:Object;
+			private var fun:Funcionario = new Funcionario();
+			private var funCra:FuncionarioCracha = new FuncionarioCracha();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject):cadastroDeFuncionarios {
+				var janela:cadastroDeFuncionarios = new cadastroDeFuncionarios();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function salvarFuncionario(event:MouseEvent=null):void {
+				txtCpf.errorString = "";
+				txtNome.errorString = "";
+				txtEmail.errorString = "";
+				txtDataNascimento.errorString = "";
+				txtTelefone.errorString = "";
+				
+				if (txtCpf.text == "" || txtCpf.text == null) {
+					txtCpf.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtNome.text == "" || txtNome.text == null) {
+					txtNome.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtEmail.text == "" || txtEmail.text == null) {
+					txtEmail.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtDataNascimento.text == "" || txtDataNascimento.text == null) {
+					txtDataNascimento.errorString = campoObrigatorio;
+					return;
+				}
+				if (txtTelefone.text == "" || txtTelefone.text == null) {
+					txtTelefone.errorString = campoObrigatorio;
+					return;
+				}
+				
+				fun.cpf = txtCpf.text;
+				fun.nomeFuncionario = txtNome.text;
+				fun.email = txtEmail.text;
+				fun.dataNascimento = txtDataNascimento.selectedDate;
+				fun.telefone = txtTelefone.text;
+				
+				if (fun_id == null) {
+					insertFuncionario.token = funcionarioControle.incluir(fun);
+				} else {
+					updateFuncionario.token = funcionarioControle.alterar(fun);
+				}
+			}
+
+			public function editarFuncionario(pai:DisplayObject, id:Number):void {
+				getFuncionario.token = funcionarioControle.consultar(id);
+				fun_id = id;
+				listarFuncionarioCracha();
+				PopUpManager.centerPopUp(this);
+			}	
+			
+			private function carregarFuncionario(event:ResultEvent):void {
+				fun = event.result as Funcionario;
+				txtCpf.text = fun.cpf;
+				txtNome.text = fun.nomeFuncionario;
+				txtEmail.text = fun.email;
+				txtDataNascimento.selectedDate = fun.dataNascimento;
+				txtTelefone.text = fun.telefone;
+			}
+			
+			private function adicionarCracha():void {
+				var fr:adicionarCrachaFuncionario = adicionarCrachaFuncionario.abrir(this, fun.id);
+				fr.addEventListener("adicionadoCrachaFuncionario", function(evt:Event):void {
+					listarFuncionarioCracha();
+				});
+			}
+			
+			private function excluirCracha():void {
+				Alert.show('Você deseja excluir o crachá selecionado?', 'Alerta!', Alert.YES | Alert.NO, null,  function(evt:CloseEvent):void {
+					if (evt.detail == Alert.YES) {
+						funCra.id = dataGridCracha.selectedItem.id;
+						funcionarioCrachaControle.excluir(funCra);
+						listarFuncionarioCracha();
+					}
+				}, null, Alert.YES);
+			}
+			
+			private function formatarData(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "DD/MM/YYYY";
+				return dataFormatada.format(item[column.dataField]);
+			}
+			
+			private function listarFuncionarioCracha(event:FlexEvent=null):void {
+				getFuncionarioCracha.token = funcionarioCrachaControle.listar(Number (fun_id));
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function funcionarioControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function funcionarioAdicionado(event:ResultEvent):void {
+				Alert.show("Funcionário adicionado com sucesso!");
+				dispatchEvent(new Event("adicionadoFuncionario"));
+				fechar();
+			}
+			
+			protected function funcionarioAlterado(event:ResultEvent):void {
+				Alert.show("Funcionário alterado com sucesso!");
+				dispatchEvent(new Event("alteradoFuncionario"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getFuncionarioCracha"/>
+		<mx:CallResponder id="getFuncionario" result="carregarFuncionario(event)"/>
+		<mx:CallResponder id="insertFuncionario" result="funcionarioAdicionado(event)" />
+		<mx:CallResponder id="updateFuncionario" result="funcionarioAlterado(event)" />
+		<services:FuncionarioCrachaControle id="funcionarioCrachaControle"
+											endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+											fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											showBusyCursor="true"/>
+		
+		<services:FuncionarioControle id="funcionarioControle" 
+									  endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									  fault="funcionarioControle_fault(event)"
+									  showBusyCursor="true"/>
+				
+		<services:CrachaControle id="crachaControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvarFuncionario(event)" icon="@Embed('icones/salvar.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroFuncionarios" width="100%" borderStyle="solid">
+		<mx:FormItem required="true" label="CPF:" width="100%">
+			<componentes:FormattedInput id="txtCpf" width="100%" inputFormat="###.###.###-##"/>
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Nome Completo:" width="100%">
+			<mx:TextInput id="txtNome" width="100%" maxChars="200"/>						
+		</mx:FormItem>
+		<mx:FormItem required="true" label="E-mail:" width="100%">
+			<mx:TextInput id="txtEmail" width="100%" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Data de Nascimento:" width="100%">
+			<mx:DateField formatString="DD/MM/YYYY" id="txtDataNascimento" width="100%" 
+						  yearNavigationEnabled="true"
+						  monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+						  dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']"/>
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Telefone:" width="100%">
+			<componentes:FormattedInput id="txtTelefone" width="100%" inputFormat="(##) #####-####"/>
+		</mx:FormItem>
+		<mx:ApplicationControlBar width="100%" borderStyle="none" includeInLayout="{fun_id != null}" visible="{fun_id != null}">
+			<mx:Button id="adicionar" label="Adicionar Crachá" click="adicionarCracha()" icon="@Embed('icones/adicionar.png')"/>
+			<mx:Button id="excluir" label="Excluir Crachá" click="excluirCracha()" enabled="{dataGridCracha.selectedItem != null}" icon="@Embed('icones/excluir.png')"/>
+		</mx:ApplicationControlBar>
+		<mx:DataGrid id="dataGridCracha" width="100%" height="100%" includeInLayout="{fun_id != null}" visible="{fun_id != null}">
+			<mx:columns>
+				<mx:DataGridColumn dataField="cracha.numeroCracha" headerText="Número do Crachá"/>
+				<mx:DataGridColumn dataField="dataInicialCracha" headerText="Data Inicial Crachá" labelFunction="formatarData"/>
+				<mx:DataGridColumn dataField="dataFinalCracha" headerText="Data Final Crachá" labelFunction="formatarData"/>
+				<mx:DataGridColumn dataField="dataCadastro" headerText="Data do Cadastro" labelFunction="formatarData"/>
+			</mx:columns>
+			<mx:AsyncListView list="{getFuncionarioCracha.lastResult}"/>
+		</mx:DataGrid>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

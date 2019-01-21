@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="1018" height="534" 
+				creationComplete="listarCracha()"
+				title="Lista de Crachás">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			
+			Alert.yesLabel = 'Sim';
+			Alert.noLabel = 'Não';
+			
+			import valueObjects.Cracha;
+			
+			public static function abrir(pai:DisplayObject):listaDeCrachas {
+				var janela:listaDeCrachas = new listaDeCrachas();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function novoCracha():void {
+				var fr:cadastroDeCrachas = cadastroDeCrachas.abrir(this);
+				fr.addEventListener("adicionadoCracha", function(evt:Event):void {
+					listarCracha();
+				});
+			}
+			
+			private function editarCracha():void {
+				var fr:cadastroDeCrachas = cadastroDeCrachas.abrir(this);
+				fr.editarCracha(this, dataGridCracha.selectedItem.id);
+				fr.addEventListener("alteradoCracha", function(evt:Event):void {
+					listarCracha();
+				});
+			}
+			
+			private function excluirCracha():void {
+				Alert.show('Você deseja excluir o crachá selecionado?', 'Alerta!', Alert.YES | Alert.NO, null,  function(evt:CloseEvent):void {
+					if (evt.detail == Alert.YES) {
+						var crac:Cracha = new Cracha();
+						crac.id = dataGridCracha.selectedItem.id;
+						crachaControle.excluir(crac);
+						listarCracha();
+					}
+				}, null, Alert.YES);
+			}
+			
+			private function pesquisarCracha():void {
+				getCracha.token = crachaControle.pesquisar(txtPesquisar.text);
+			}
+			
+			private function listarCracha(event:FlexEvent=null):void {
+				getCracha.token = crachaControle.listar();
+			}
+			
+			private function imprimirLista():void {
+				navigateToURL(new URLRequest("relatorios/relatorio_cracha.jsp"), "_blank");
+			}
+			
+			private function formatarData(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "DD/MM/YYYY"; 
+				return dataFormatada.format(item[column.dataField]);
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getCracha"/>
+		<services:CrachaControle id="crachaControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="novo" label="Novo" click="novoCracha()" icon="@Embed('icones/novo.png')"/>
+		<mx:Button id="editar" label="Editar" click="editarCracha()" enabled="{dataGridCracha.selectedItem != null}" icon="@Embed('icones/editar.png')"/>
+		<mx:Button id="excluir" label="Excluir" click="excluirCracha()" enabled="{dataGridCracha.selectedItem != null}" icon="@Embed('icones/excluir.png')"/>
+		<mx:Button id="atualizar" label="Atualizar" click="listarCracha()" icon="@Embed('icones/atualizar.png')"/>
+		<mx:Button id="imprimir" label="Imprimir" click="imprimirLista()" icon="@Embed('icones/imprimir.png')"/>
+		<mx:Label id="pesquisar" text="Pesquisar" />
+		<mx:TextInput id="txtPesquisar" width="100%" enter="pesquisarCracha()"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:DataGrid id="dataGridCracha" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="numeroCracha" headerText="Número Crachá"/>
+			<mx:DataGridColumn dataField="situacaoCracha" headerText="Situação"/>
+			<mx:DataGridColumn dataField="dataCadastro" headerText="Data do Cadastro" labelFunction="formatarData"/>
+		</mx:columns>
+		<mx:AsyncListView list="{getCracha.lastResult}"/>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none" horizontalAlign="right">
+		<mx:Button id="fecharTela" label="Fechar" click="fechar()"/>
+	</mx:ApplicationControlBar>
+	
+</mx:TitleWindow>

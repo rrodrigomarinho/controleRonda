@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				width="350" height="100%"
+				creationComplete="init(event)"
+				title="Adicionar Ponto" xmlns:services="services.*">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoPontoRonda", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.Ponto;
+			import valueObjects.Ronda;
+			import valueObjects.RondaPonto;
+			
+			private var mensagem:String;
+			private var ronPon:RondaPonto = new RondaPonto();
+			private var ron:Ronda = new Ronda();
+			private var pon:Ponto = new Ponto();
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject, ronda_id:int):adicionarPontoRonda {
+				var janela:adicionarPontoRonda = new adicionarPontoRonda();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				janela.ronPon.ronda = new Ronda();
+				janela.ronPon.ronda.id = ronda_id;
+				return janela;
+			}
+			
+			private function salvar(event:MouseEvent=null):void {
+				cmbPonto.errorString = "";
+
+				if (cmbPonto.selectedItem == "" || cmbPonto.selectedItem == null) {
+					cmbPonto.errorString = "Selecione um ponto";
+					return;
+				}
+				
+				pon.id = cmbPonto.selectedItem.id;
+				ronPon.ponto = pon;
+				
+				var hInicial:String = String (txtHoraInicial.value);
+				if (hInicial.length == 1) {
+					hInicial = "0" + hInicial;
+				}
+				
+				var mInicial:String = String (txtMinutoInicial.value);
+				if (mInicial.length == 1) {
+					mInicial = "0" + mInicial;
+				}
+				
+				ronPon.horaInicialPonto = hInicial + ":" + mInicial;
+				
+				var hFinal:String = String (txtHoraFinal.value);
+				if (hFinal.length == 1) {
+					hFinal = "0" + hFinal;
+				}
+				
+				var mFinal:String = String (txtMinutoFinal.value);
+				if (mFinal.length == 1) {
+					mFinal = "0" + mFinal;
+				}
+				
+				ronPon.horaFinalPonto = hFinal + ":" + mFinal;
+				rondaPontoControle.incluir(ronPon);
+			}
+			
+			private function formatarHora(value:Number):String {
+				var hora:String = value.toString();
+				if (hora.length == 1) {
+					return "0" + hora
+				}
+				return hora;
+			}
+			
+			private function listarPonto():void {
+				getPonto.token = pontoControle.listar();
+			}
+			
+			private function carregarPonto(event:ResultEvent):void {
+				cmbPonto.dataProvider = event.result;
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function init(event:FlexEvent):void {
+				listarPonto();
+			}
+			
+			protected function rondaPontoControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function rondaPontoControle_resul(event:ResultEvent):void {
+				Alert.show("Ponto adicionado com sucesso!");	
+				dispatchEvent(new Event("adicionadoPontoRonda"));
+				fechar();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getPonto" result="carregarPonto(event)"/>
+		<services:RondaPontoControle id="rondaPontoControle"
+									endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									fault="rondaPontoControle_fault(event)"
+									result="rondaPontoControle_resul(event)"
+									showBusyCursor="true"/>
+		<services:PontoControle id="pontoControle"
+								endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvar(event)"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroPonto" width="100%" borderStyle="solid">
+		<mx:FormItem label="Ponto:" width="100%" required="true">
+			<mx:ComboBox id="cmbPonto" labelField="nomePonto" width="100%" prompt="-- selecione um ponto --" />
+		</mx:FormItem>
+		<mx:FormItem id="horaMinutoInicial" label="Hora Inicial:" width="100%" required="true" direction="horizontal">
+			<s:NumericStepper width="50" id="txtHoraInicial" maxChars="2" minimum="0" maximum="23" value="0" valueFormatFunction="formatarHora"/>
+			<mx:Label text=":"/>
+			<s:NumericStepper width="50" id="txtMinutoInicial" maxChars="2" minimum="0" maximum="59" value="0" valueFormatFunction="formatarHora"/>
+		</mx:FormItem>
+		<mx:FormItem id="horaMinutoFinal" label="Hora Final:" width="100%" required="true"  direction="horizontal">
+			<s:NumericStepper width="50" id="txtHoraFinal" maxChars="2" minimum="0" maximum="23" value="0" valueFormatFunction="formatarHora"/>
+			<mx:Label text=":"/>
+			<s:NumericStepper width="50" id="txtMinutoFinal" maxChars="2" minimum="0" maximum="59" value="0" valueFormatFunction="formatarHora"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+</mx:TitleWindow>

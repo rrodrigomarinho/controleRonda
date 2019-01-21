@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="800" height="100%"
+				title="Cadastro de Pontos">
+	
+	<fx:Metadata>
+		[Event(name="adicionadoPonto", type="flash.events.Event")]
+		[Event(name="alteradoPonto", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.Ponto;
+			
+			private var ponto_id:Object;
+			private var pnt:Ponto = new Ponto();
+			private var buscaLigada:Boolean = true;
+			private var campoObrigatorio:String = "Este campo é obrigatório";
+			
+			public static function abrir(pai:DisplayObject):cadastroDePontos {
+				var janela:cadastroDePontos = new cadastroDePontos();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				janela.buscaLigada = true;
+				janela.getIpPonto.token = janela.pontoControle.consultarUltimoPonto();
+				return janela;
+			}
+			
+			private function salvarPonto(event:MouseEvent=null):void {
+				txNomePonto.errorString = "";
+				txtIpPonto.errorString = "";
+				txtLocalPonto.errorString = "";
+				
+				if (txNomePonto.text == "" || txNomePonto.text == null) {
+					txNomePonto.errorString = campoObrigatorio;
+					return;
+				}
+				
+				if (txtIpPonto.text == "" || txtIpPonto.text == null) {
+					txtIpPonto.errorString = campoObrigatorio;
+					return;
+				}
+				
+				if (txtLocalPonto.text == "" || txtLocalPonto.text == null) {
+					txtLocalPonto.errorString = campoObrigatorio;
+					return;
+				}
+				
+				pnt.nomePonto = txNomePonto.text;
+				pnt.ipPonto = txtIpPonto.text;
+				pnt.localPonto = txtLocalPonto.text;
+				
+				if (ponto_id == null) {
+					insertPonto.token = pontoControle.incluir(pnt);
+				} else {
+					updatePonto.token = pontoControle.alterar(pnt);
+				}
+			}
+			
+			public function editarPonto(pai:DisplayObject, id:Number):void {
+				getPonto.token = pontoControle.consultar(id);
+				ponto_id = id;
+			}
+			
+			private function carregarPonto(event:ResultEvent):void {
+				pnt = event.result as Ponto;
+				txNomePonto.text = pnt.nomePonto;
+				getIpPonto.token = pontoControle.consultarUltimoPonto();
+				txtLocalPonto.text = pnt.localPonto;
+			}
+			
+			protected function getCarregarIpPonto(event:ResultEvent):void {
+				if(buscaLigada == false) {
+					return;
+				}
+				
+				txtIpPonto.text = event.result as String;
+				if( txtIpPonto.text == "" ) {
+					setTimeout(function():void {
+						getIpPonto.token = pontoControle.consultarUltimoPonto();
+					}, 1000);
+				}
+			}
+			
+			private function fechar():void {
+				buscaLigada = false;
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function pontoControle_fault(event:FaultEvent):void {
+				Alert.show(event.fault.rootCause.message);
+			}
+			
+			protected function pontoAdicionado(event:ResultEvent):void {
+				Alert.show('Ponto cadastrado com sucesso!');
+				dispatchEvent(new Event("adicionadoPonto"));
+				fechar();
+			}
+			
+			protected function pontoAlterado(event:ResultEvent):void {
+				Alert.show('Ponto alterado com sucesso!');
+				dispatchEvent(new Event("alteradoPonto"));
+				fechar();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getIpPonto" result="getCarregarIpPonto(event)"/>
+		<mx:CallResponder id="getPonto" result="carregarPonto(event)"/>
+		<mx:CallResponder id="insertPonto" result="pontoAdicionado(event)" />
+		<mx:CallResponder id="updatePonto" result="pontoAlterado(event)" />
+		<services:PontoControle id="pontoControle"
+								endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								fault="pontoControle_fault(event)"
+								showBusyCursor="true"/>
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="btnSalvar" label="Salvar" click="salvarPonto(event)" icon="@Embed('icones/salvar.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="cadastroPonto" width="100%" borderStyle="solid">
+		<mx:FormItem required="true" label="Nome Ponto:" width="100%">
+			<mx:TextInput id="txNomePonto" width="100%" maxChars="200"/>						
+		</mx:FormItem>
+		<mx:FormItem required="true" label="IP Ponto:" width="100%" enabled="false">
+			<mx:TextInput id="txtIpPonto" width="100%" maxChars="200"/>						
+		</mx:FormItem>
+		<mx:FormItem required="true" label="Local Ponto:" width="100%">
+			<mx:TextInput id="txtLocalPonto" width="100%" maxChars="200"/>						
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" borderStyle="none">
+		<mx:Button id="btnFechar" label="Fechar" click="fechar()"/>				
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

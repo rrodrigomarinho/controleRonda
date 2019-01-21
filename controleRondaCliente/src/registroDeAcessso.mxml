@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="1018" height="534" 
+				creationComplete="init(event)"
+				title="Registro de Acesso">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			private var idFuncionario:Number;
+			private var idCracha:Number;
+			private var idPonto:Number;
+			private var idRonda:Number;
+			private var idSituacao:Number;
+			private var dtIni:Date;
+			private var dtFin:Date;
+			
+			public static function abrir(pai:DisplayObject):registroDeAcessso {
+				var janela:registroDeAcessso = new registroDeAcessso();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			protected function carregarCracha(event:ResultEvent):void {
+				cmbCracha.dataProvider = event.result;
+			}
+			
+			protected function carregarFuncionario(event:ResultEvent):void {
+				cmbFuncionario.dataProvider = event.result;
+			}
+			
+			protected function carregarPonto(event:ResultEvent):void {
+				cmbPonto.dataProvider = event.result;
+			}
+			
+			protected function carregarRonda(event:ResultEvent):void {
+				cmbRonda.dataProvider = event.result;
+			}
+			
+			protected function carregarSituacao(event:ResultEvent):void {
+				cmbSituacao.dataProvider = event.result;
+			}
+			
+			private function listarRegistro(event:FlexEvent=null):void {
+				getRegistro.token = registroControle.listar();
+			}
+			
+			private function listarFuncionario():void {
+				getFuncionario.token = funcionarioControle.listar();
+			}
+			
+			private function listarCracha():void {
+				getCracha.token = crachaControle.listar();
+			}
+			
+			private function listarPonto():void {
+				getPonto.token = pontoControle.listar();
+			}
+			
+			private function listarRonda():void {
+				getRonda.token = rondaControle.listar();
+			}
+			
+			private function listarSituacao():void {
+				getSituacao.token = situacaoControle.listar();
+			}
+			
+			protected function init(event:FlexEvent):void {
+				listarRegistro();
+				listarFuncionario();
+				listarCracha();
+				listarPonto();
+				listarRonda();
+				listarSituacao();
+			}
+			
+			private function formatarData(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "DD/MM/YYYY";
+				return dataFormatada.format(item[column.dataField]);
+			}
+			
+			private function formatarHora(item:Object, column:DataGridColumn):String{				
+				var dataFormatada:DateFormatter = new DateFormatter();
+				dataFormatada.formatString = "JJ:NN:SS";
+				return dataFormatada.format(item[column.dataField]);
+			}
+			
+			protected function filtrarRegistro():void {
+				txtDataInicialRegistro.errorString = "";
+				txtDataFinalRegistro.errorString = "";
+				
+				if (cmbFuncionario.selectedItem == null) {
+					idFuncionario = 0;
+				} else {
+					idFuncionario = cmbFuncionario.selectedItem.id;
+				}
+				
+				if (cmbCracha.selectedItem == null) {
+					idCracha = 0;
+				} else {
+					idCracha = cmbCracha.selectedItem.id;
+				}
+				
+				if (cmbPonto.selectedItem == null) {
+					idPonto = 0;
+				} else {
+					idPonto = cmbPonto.selectedItem.id;
+				}
+
+				if (cmbRonda.selectedItem == null) {
+					idRonda = 0;
+				} else {
+					idRonda = cmbRonda.selectedItem.id;
+				}
+				
+				if (cmbSituacao.selectedItem == null) {
+					idSituacao = 0;
+				} else {
+					idSituacao = cmbSituacao.selectedItem.id;
+				}
+				
+				dtIni = txtDataInicialRegistro.selectedDate;
+				dtFin = txtDataFinalRegistro.selectedDate;
+				
+				if (dtIni > dtFin) {
+					txtDataInicialRegistro.errorString = "A data final não pode ser menor que data inicial!";
+					txtDataFinalRegistro.errorString = "A data final não pode ser menor que data inicial!";
+				} else {
+					getRegistro.token = registroControle.filtrar(idFuncionario, idCracha, idPonto, idRonda, idSituacao, dtIni, dtFin);
+				}
+			}
+			
+			private function atualizarTela():void {
+				listarRegistro();
+				limparOpcoes();
+			}
+			
+			private function limparOpcoes():void {
+				cmbFuncionario.selectedItem = cmbFuncionario.prompt;
+				cmbPonto.selectedItem = cmbPonto.prompt;
+				cmbCracha.selectedItem = cmbCracha.prompt;
+				cmbRonda.selectedItem = cmbRonda.prompt;
+				cmbSituacao.selectedItem = cmbSituacao.prompt;
+				txtDataInicialRegistro.selectedDate = null;
+				txtDataFinalRegistro.selectedDate = null;
+			}
+			
+			private function imprimirLista():void {
+				navigateToURL(new URLRequest("relatorios/relatorio_registro.jsp"), "_blank");
+			}
+			
+			private function fechar():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<mx:CallResponder id="getRegistro" />
+		<mx:CallResponder id="getFuncionario" result="carregarFuncionario(event)"/>
+		<mx:CallResponder id="getPonto" result="carregarPonto(event)"/>
+		<mx:CallResponder id="getRonda" result="carregarRonda(event)"/>
+		<mx:CallResponder id="getCracha" result="carregarCracha(event)"/>
+		<mx:CallResponder id="getSituacao" result="carregarSituacao(event)"/>
+		<services:RegistroControle id="registroControle"
+								   endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								   showBusyCursor="true"/>
+		<services:FuncionarioControle id="funcionarioControle"
+									  endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+									  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									  showBusyCursor="true"/>
+		<services:PontoControle id="pontoControle"
+								endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								showBusyCursor="true"/>
+		<services:RondaControle id="rondaControle"
+							   endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+							   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+							   showBusyCursor="true"/>
+		<services:CrachaControle id="crachaControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<services:SituacaoRegistroControle id="situacaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none">
+		<mx:Button id="atualizar" label="Atualizar" click="atualizarTela()"  icon="@Embed('icones/atualizar.png')"/>
+		<mx:Button id="imprimir" label="Imprimir" click="imprimirLista()" icon="@Embed('icones/imprimir.png')"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Form id="filtroAcesso" width="100%" borderStyle="solid" visible="true" includeInLayout="true">
+		<mx:FormItem label="Funcionário:" direction="horizontal">
+			<mx:ComboBox id="cmbFuncionario" labelField="nomeFuncionario" prompt="-- selecione um funcionario --" change="filtrarRegistro()"/>
+			
+			<mx:FormItem label=" Crachá:" direction="horizontal">
+				<mx:ComboBox id="cmbCracha" labelField="numeroCracha" prompt="-- selecione um crachá --" change="filtrarRegistro()"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Ponto:">
+				<mx:ComboBox id="cmbPonto" labelField="nomePonto" prompt="-- selecione um ponto --" change="filtrarRegistro()"/>
+			</mx:FormItem>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Ronda:" direction="horizontal">
+			<mx:ComboBox id="cmbRonda" labelField="nomeRonda" prompt="-- selecione uma ronda --" change="filtrarRegistro()"/>
+			
+			<mx:FormItem label="Situação:" direction="horizontal">
+				<mx:ComboBox id="cmbSituacao" labelField="descricaoSituacao" prompt="-- selecione uma situação --" change="filtrarRegistro()"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Entre:">
+				<mx:DateField id="txtDataInicialRegistro" formatString="DD/MM/YYYY"
+							   yearNavigationEnabled="true"
+							   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+							   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']" change="filtrarRegistro()"/>
+			</mx:FormItem>
+			<mx:FormItem label="e:" width="100%">
+				<mx:DateField id="txtDataFinalRegistro" formatString="DD/MM/YYYY"
+							   yearNavigationEnabled="true"
+							   monthNames="['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']"
+							   dayNames="['D', 'S', 'T', 'Q', 'Q', 'S', 'S']" change="filtrarRegistro()"/>
+			</mx:FormItem>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:DataGrid width="100%" height="100%" dataProvider="{getRegistro.lastResult}">
+		<mx:columns>
+			<mx:DataGridColumn dataField="fun_nom" headerText="Nome Funcionário"/>
+			<mx:DataGridColumn dataField="cra_num" headerText="Número Crachá"/>
+			<mx:DataGridColumn dataField="ron_nom" headerText="Ronda"/>
+			<mx:DataGridColumn dataField="pon_nom" headerText="Ponto"/>
+			<mx:DataGridColumn dataField="dat_reg" headerText="Data" labelFunction="formatarData"/>
+			<mx:DataGridColumn dataField="dat_reg" headerText="Hora" labelFunction="formatarHora"/>
+			<mx:DataGridColumn dataField="des_sit" headerText="Situação"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" borderStyle="none" horizontalAlign="right">
+		<mx:Button id="fecharTela" label="Fechar" click="fechar()"/>
+	</mx:ApplicationControlBar>
+	
+</mx:TitleWindow>

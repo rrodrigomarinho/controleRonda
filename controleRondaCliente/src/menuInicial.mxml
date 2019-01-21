@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:services="services.*"
+				width="100%" height="670" backgroundColor="#FFFFFF" fontSize="22">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			public static function abrir(pai:DisplayObject):menuInicial {
+				var janela:menuInicial = new menuInicial();
+				PopUpManager.addPopUp(janela, pai, true);
+				PopUpManager.centerPopUp(janela);
+				return janela;
+			}
+			
+			private function funcionarios():void {
+				listaDeFuncionarios.abrir(this);
+			}
+			
+			private function crachas():void {
+				listaDeCrachas.abrir(this);
+			}
+			
+			private function pontos():void {
+				listaDePontos.abrir(this);
+			}
+			
+			private function rondas():void {
+				listaDeRondas.abrir(this);
+			}
+			
+			private function registro():void {
+				registroDeAcessso.abrir(this);
+			}
+			
+			private function parametrizacao():void {
+				listaDeParametrosSistema.abrir(this);
+			}
+			
+			private function usuarioSistema():void {
+				listaDeUsuarios.abrir(this);
+			}
+			
+			private function sairSistema():void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:ConfiguracaoControle id="configuracaoControle"
+								 endpoint="http://localhost:8080/controleRondaServidor/messagebroker/amf"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	<mx:TitleWindow width="100%" height="100%" layout="absolute" title="Olá! Seja bem vindo ao controle de rondas!" borderStyle="none">
+		<mx:Button id="funcionario" x="50" y="50" width="279" height="150" label="Funcionários" click="funcionarios()" icon="@Embed('icones/funcionario.png')"/>
+		<mx:Button id="cracha" x="379" y="50" width="279" height="150" label="Crachás" click="crachas()" icon="@Embed('icones/cracha.png')"/>
+		<mx:Button id="ponto" x="708" y="50" width="279" height="150" label="Pontos" click="pontos()" icon="@Embed('icones/ponto.png')"/>
+		<mx:Button id="ronda" x="1037" y="50" width="279" height="150" label="Rondas" click="rondas()" icon="@Embed('icones/ronda.png')"/>
+		<mx:Button id="usuario" x="50" y="350" width="279" height="150" label="Usuários" click="usuarioSistema()" icon="@Embed('icones/usuario.png')"/>
+		<mx:Button id="registroAcesso" x="379" y="350" width="279" height="150" label="Registro de Acessos" click="registro()" icon="@Embed('icones/registro.png')" fontSize="19"/>
+		<mx:Button id="parametizacao" x="708" y="350" width="279" height="150" label="Parametrização" click="parametrizacao()" icon="@Embed('icones/parametizacao.png')"/>
+		<mx:Button id="sair" x="1037" y="350" width="279" height="150" label="Sair" click="sairSistema()" icon="@Embed('icones/sair.png')"/>
+	</mx:TitleWindow>
+</mx:Application>
